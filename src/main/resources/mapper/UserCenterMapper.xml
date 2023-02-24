@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.hitwh.werunassignment.mapper.UserCenterMapper">
+
+    <resultMap id="UserMap" type="edu.hitwh.werunassignment.model.domain.User">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="useraccount" column="userAccount" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="userpassword" column="userPassword" jdbcType="VARCHAR"/>
+            <result property="userrole" column="userRole" jdbcType="INTEGER"/>
+            <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isdelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userAccount,username,
+        userPassword,userRole,createTime,
+        updateTime,isDelete
+    </sql>
+</mapper>

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: user-center
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/werun-assignment
+    username: root
+    password: 2201110520
+server:
+  port: 8080
+

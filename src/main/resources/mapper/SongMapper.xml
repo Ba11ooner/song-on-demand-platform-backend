@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.hitwh.werunassignment.mapper.SongMapper">
+
+    <resultMap id="BaseResultMap" type="edu.hitwh.werunassignment.model.domain.Song">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="songname" column="songName" jdbcType="VARCHAR"/>
+            <result property="singername" column="singerName" jdbcType="VARCHAR"/>
+            <result property="platformname" column="platformName" jdbcType="VARCHAR"/>
+            <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+            <result property="votes" column="votes" jdbcType="INTEGER"/>
+            <result property="songstatus" column="songStatus" jdbcType="INTEGER"/>
+            <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isdelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,songName,singerName,
+        platformName,remarks,votes,
+        songStatus,createTime,updateTime,
+        isDelete
+    </sql>
+</mapper>
+
