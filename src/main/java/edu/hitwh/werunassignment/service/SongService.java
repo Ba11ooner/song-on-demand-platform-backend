@@ -18,11 +18,20 @@ public interface SongService extends IService<Song> {
 
 
     // 给歌名搜票数
-    Song findOneSongForVote(String songName, HttpServletRequest request);
+    Song findOneSongForVote(String songName);
 
 
-    List<Song> getUnexaminedSongs(HttpServletRequest request);
+    List<Song> getUnexaminedSongs();
 
     //审核
-    List<Song> examineSongs(List<Song> songs, HttpServletRequest request);
+    List<Song> examineSongs(List<Song> songs);
+
+    List<Song> getUnDeleteSongs();
+
+    List<Song> deleteSongs(List<Song> songs);
+
+    List<Song> showVotes();
+
+    //投票
+    List<Song> vote(List<Song> songs);
 }

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +42,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
      */
     @Override
     public User register(String userAccount, String username, String password, String checkedPassword) {
+        System.out.println("UserCenterService:");
         //1.判空
         if (StringUtils.isAnyBlank(userAccount, username, password, checkedPassword)) {
             return null;
@@ -111,6 +111,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
      */
     @Override
     public User login(String userAccount, String password, HttpServletRequest request) {
+        System.out.println("UserCenterService:login");
         //1.判空
         if (StringUtils.isAnyBlank(userAccount, password)) {
             return null;
@@ -131,7 +132,6 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
 
         //3.密码加密
         String encryptedPassword = DigestUtils.md5DigestAsHex((SALT + password).getBytes());
-        //System.out.println(encryptedPassword);
 
         //4.数据库比对
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -145,13 +145,11 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
 
         //5.用户脱敏
         User safetyUser = getSafetyUser(user);
-        //System.out.println("User:"+user);
-        //System.out.println("safetyUser:"+safetyUser);
+
         //6.登录态记录
         request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
 
         //7.返回结果
-        //System.out.println("login:" + safetyUser);
         return safetyUser;
     }
 
@@ -162,6 +160,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
      */
     @Override
     public void logout(HttpServletRequest request) {
+        System.out.println("UserCenterService:logout");
         //登录态清除
         request.getSession().removeAttribute(USER_LOGIN_STATE);
     }
@@ -169,9 +168,9 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
 
     @Override
     public boolean isAdmin(HttpServletRequest request) {
+        System.out.println("UserCenterService:isAdmin");
         //1. 获取用户登录态
         User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-        //System.out.println("isAdmin:"+user);
         //2.权限判断
         return user != null && user.getUserrole() == ADMIN_ROLE;
     }

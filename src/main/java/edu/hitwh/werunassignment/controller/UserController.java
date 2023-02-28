@@ -17,15 +17,17 @@ public class UserController {
 
     @Autowired
     UserCenterService userCenterService;
+
     //测试用
     @GetMapping("/hello")
-    public String hello(){
+    public String hello() {
         System.out.println("hello");
         return "hello";
     }
 
     @PostMapping("/register")
     public User register(@RequestBody RegisterRequest registerRequest) {
+        System.out.println("UserController:register");
         if (registerRequest == null) return null;
         String userAccount = registerRequest.getUserAccount();
         String username = registerRequest.getUsername();
@@ -37,6 +39,7 @@ public class UserController {
 
     @PostMapping("/login")
     public User login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        System.out.println("UserController:login");
         if (loginRequest == null) return null;
         String userAccount = loginRequest.getUserAccount();
         String password = loginRequest.getPassword();
@@ -44,13 +47,15 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public void logout(HttpServletRequest request){
+    public void logout(HttpServletRequest request) {
+        System.out.println("UserController:logout");
         userCenterService.logout(request);
     }
 
     //测试用
     @GetMapping("/getUserState")
-    public User getUserState(HttpServletRequest request){
-        return (User)request.getSession().getAttribute(USER_LOGIN_STATE);
+    public User getUserState(HttpServletRequest request) {
+        System.out.println("UserController:getUserState");
+        return (User) request.getSession().getAttribute(USER_LOGIN_STATE);
     }
 }
