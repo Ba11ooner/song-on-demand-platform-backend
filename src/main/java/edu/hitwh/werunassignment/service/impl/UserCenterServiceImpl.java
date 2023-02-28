@@ -1,6 +1,8 @@
 package edu.hitwh.werunassignment.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import edu.hitwh.werunassignment.common.ErrorCode;
+import edu.hitwh.werunassignment.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.hitwh.werunassignment.mapper.UserCenterMapper;
@@ -114,20 +116,20 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
         System.out.println("UserCenterService:login");
         //1.判空
         if (StringUtils.isAnyBlank(userAccount, password)) {
-            return null;
+            throw new BusinessException(ErrorCode.NULL_ERROR);
         }
 
         //2.判格式
         if (userAccount.length() != 10) {// 学号不是 10 位
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"学号/工号格式错误");
         }
         if (password.length() < 8 || password.length() > 20) { // 密码小于 8 位或大于 20 位
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"密码小于 8 位或大于 20 位");
         }
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";// 非法字符
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (matcher.find()) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"存在非法字符");
         }
 
         //3.密码加密
@@ -140,7 +142,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
         // queryWrapper 就相当于 SQL 语句
         User user = userMapper.selectOne(queryWrapper);
         if (user == null) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号密码不匹配");
         }
 
         //5.用户脱敏
@@ -176,7 +178,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
     }
 
     private User getSafetyUser(User user) {
-        if (user == null) return null;
+        if (user == null) throw new BusinessException(ErrorCode.NULL_ERROR);
         User safetyUser = new User();
         safetyUser.setUserpassword(null);
         safetyUser.setUseraccount(user.getUseraccount());

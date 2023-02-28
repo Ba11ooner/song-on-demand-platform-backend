@@ -3,6 +3,8 @@ package edu.hitwh.werunassignment.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.hitwh.werunassignment.common.ErrorCode;
+import edu.hitwh.werunassignment.exception.BusinessException;
 import edu.hitwh.werunassignment.mapper.SongMapper;
 import edu.hitwh.werunassignment.model.domain.Song;
 import edu.hitwh.werunassignment.service.UserCenterService;
@@ -34,7 +36,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
         System.out.println("SongService: addOneSong");
         //1.判空
         if (StringUtils.isAnyBlank(songName, singerName, platformName, remarks)) {
-            return null;
+            throw new BusinessException(ErrorCode.NULL_ERROR);
         }
 
         // 2.字符串截取（前端也做一次限定，此处出于安全起见再做一次限定，也可以放到 Controller 中）
@@ -56,18 +58,15 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
             remarks = songName.substring(0, 500); // 左闭右开 [,)
         }
 
-        // 创建对象
+        //3.插入
         Song song = new Song();
         song.setSongname(songName);
         song.setSingername(singerName);
         song.setPlatformname(platformName);
         song.setRemarks(remarks);
-
-
-        //3.插入
         int result = songMapper.insert(song);
         if (result < 0) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"歌曲已存在");
         }
 
         //4.返回结果
@@ -81,7 +80,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
         System.out.println("SongService: findOneSongForVote");
         //1.判空
         if (StringUtils.isAnyBlank(songName))
-            return null;
+            throw new BusinessException(ErrorCode.NULL_ERROR);
         //2.查询数据库
         QueryWrapper<Song> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("songName", songName);
@@ -117,7 +116,6 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
             songList.add(songMapper.selectOne(queryWrapper));
         }
         //2.返回修改后的结果
-        System.out.println(songList);
         return songList;
     }
 
