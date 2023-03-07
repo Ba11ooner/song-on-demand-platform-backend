@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.hitwh.werunassignment.common.ErrorCode;
+import edu.hitwh.werunassignment.constant.SongConstant;
 import edu.hitwh.werunassignment.exception.BusinessException;
 import edu.hitwh.werunassignment.mapper.SongMapper;
 import edu.hitwh.werunassignment.model.domain.Song;
@@ -15,6 +16,9 @@ import edu.hitwh.werunassignment.service.SongService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static edu.hitwh.werunassignment.constant.SongConstant.PASS_STATUS;
+import static edu.hitwh.werunassignment.constant.SongConstant.WAIT_STATUS;
 
 /**
  * @author 18047
@@ -35,7 +39,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
     public Song addOneSong(String songName, String singerName, String platformName, String remarks) {
         System.out.println("SongService: addOneSong");
         //1.判空
-        if (StringUtils.isAnyBlank(songName, singerName, platformName, remarks)) {
+        if (StringUtils.isAnyBlank(songName, singerName, platformName)) {
             throw new BusinessException(ErrorCode.NULL_ERROR);
         }
 
@@ -66,7 +70,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
         song.setRemarks(remarks);
         int result = songMapper.insert(song);
         if (result < 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"歌曲已存在");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "歌曲已存在");
         }
 
         //4.返回结果
@@ -94,7 +98,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
     public List<Song> getUnexaminedSongs() {
         System.out.println("SongService: getUnexaminedSongs");
         QueryWrapper<Song> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("songStatus", 0);
+        queryWrapper.eq("songStatus", WAIT_STATUS);
         return songMapper.selectList(queryWrapper);
     }
 
@@ -119,7 +123,6 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
         return songList;
     }
 
-
     @Override // 获取没被删除的歌曲
     public List<Song> getUnDeleteSongs() {
         System.out.println("SongService: getUnDeleteSongs");
@@ -131,15 +134,19 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
     @Override // 从没被删除的歌曲里面选要删除的歌曲
     public List<Song> deleteSongs(List<Song> songs) {
         System.out.println("SongService: deleteSongs");
-        List<Song> songList = new ArrayList<>();
         for (Song song : songs) {
-            songMapper.deleteById(song.getId()); // 希望实现逻辑删除而非直接删除? 记得给对应属性加上 @TableLogic 注解
-            QueryWrapper<Song> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", song.getId());
-            songList.add(songMapper.selectOne(queryWrapper));
+            //1. 查找 id
+            QueryWrapper<Song> queryWrapperForId = new QueryWrapper<>();
+            queryWrapperForId.eq("songName", song.getSongname());
+            Song tmp = songMapper.selectOne(queryWrapperForId);// 如果没找到，直接返回 null
+            if (tmp==null) throw new BusinessException(ErrorCode.PARAMS_ERROR,"歌曲不存在或已删除"); //2_01.没找到，抛出异常
+            else{
+                //2_02.找到了，根据 id 实现逻辑删除
+                songMapper.deleteById(tmp.getId()); // 希望实现逻辑删除而非直接删除? 记得给对应属性加上 @TableLogic 注解
+            }
         }
-        System.out.println(songList);
-        return songList;
+        //3.逻辑删除后无法通过查询再拿到，返回删除前的数据
+        return songs;
     }
 
     // 展示投票结果
@@ -147,27 +154,32 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song>
     public List<Song> showVotes() {
         System.out.println("SongService: showVotes");
         QueryWrapper<Song> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("songStatus", 1);
+        queryWrapper.eq("songStatus", PASS_STATUS);
         return songMapper.selectList(queryWrapper);
     }
 
-    //投票
+    //投票，假定传入的都是可以投票的（songStatus  = 1）
     @Override
     public List<Song> vote(List<Song> songs) {
         System.out.println("SongService: vote");
         List<Song> songList = new ArrayList<>();
+        System.out.println(songs);
         for (Song song : songs) {
             // 获取投票前数据
             QueryWrapper<Song> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("songName", song.getSongname());
             Song songTMP = songMapper.selectOne(queryWrapper);
-            // 更改投票数据
-            UpdateWrapper<Song> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("songName", song.getSongname());
-            updateWrapper.set("votes", songTMP.getVotes() + 1);
-            songMapper.update(songTMP, updateWrapper);
-            // 获取投票后数据
-            songList.add(songMapper.selectOne(queryWrapper));
+            //2_01.没找到，抛出异常
+            if (songTMP==null) throw new BusinessException(ErrorCode.PARAMS_ERROR,"歌曲不存在或已删除");
+            else{
+                //2_02.找到，处理
+                UpdateWrapper<Song> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("songName", song.getSongname());
+                updateWrapper.set("votes", songTMP.getVotes() + 1);
+                songMapper.update(songTMP, updateWrapper);
+                // 获取投票后数据
+                songList.add(songMapper.selectOne(queryWrapper));
+            }
         }
         return songList;
     }

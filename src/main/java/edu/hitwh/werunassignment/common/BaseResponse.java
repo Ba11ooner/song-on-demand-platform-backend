@@ -1,7 +1,9 @@
 package edu.hitwh.werunassignment.common;
 
-import java.io.Serializable;
+import lombok.Data;
 
+import java.io.Serializable;
+@Data
 public class BaseResponse<T> implements Serializable {
     private int code;
     private T data;
@@ -15,11 +17,11 @@ public class BaseResponse<T> implements Serializable {
         this.description = description;
     }
 
-    BaseResponse(ErrorCode errorCode, T data) {
+    public BaseResponse(ErrorCode errorCode, T data) {
         this.code = errorCode.getCode();
         this.data = data;
         this.message = errorCode.getMessage();
-        this.description = description;
+        this.description = errorCode.getDescription();
     }
 
 }

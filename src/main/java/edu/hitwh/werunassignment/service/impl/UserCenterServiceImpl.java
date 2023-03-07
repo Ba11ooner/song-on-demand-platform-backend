@@ -47,27 +47,27 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
         System.out.println("UserCenterService:");
         //1.判空
         if (StringUtils.isAnyBlank(userAccount, username, password, checkedPassword)) {
-            return null;
+            throw new BusinessException(ErrorCode.NULL_ERROR);
         }
         //2.格式判断
         if (userAccount.length() != 10) {// 学号不是 10 位
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"学号不是10位");
         }
         if (password.length() < 8 || checkedPassword.length() < 8 || password.length() > 20 || checkedPassword.length() > 20) { // 密码小于 8 位或大于 20 位
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"密码小于 8 位或大于 20 位");
         }
         if (username.length() < 2 || username.length() > 16) { // 姓名小于 2 个字 大于 16 个字
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"姓名小于 2 个字 大于 16 个字");
         }
         //特殊字符
         String validPattern = "[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (matcher.find()) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"包含特殊字符");
         }
         // 密码和校验密码相同
         if (!password.equals(checkedPassword)) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"密码和校验密码不同");
         }
 
         //3.账户不重复
@@ -78,7 +78,7 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
 
         if (count > 0) {// 账号重复
             System.out.println("账号重复");
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号重复");
         }
 
         //4.加密
@@ -94,11 +94,9 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
 
         //6.用户脱敏
         User safetyUser = getSafetyUser(user);
-
-        System.out.println("register:" + safetyUser);
         //7.返回结果
         if (!saveResult) {
-            return null;
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"注册功能 系统错误");
         } else
             return safetyUser;
     }
@@ -150,7 +148,11 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
 
         //6.登录态记录
         request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
-
+        // FIXME 登录态
+        System.out.println("------------------");
+        System.out.println(request.getSession().getAttribute(USER_LOGIN_STATE));
+        System.out.println(request);
+        System.out.println("------------------");
         //7.返回结果
         return safetyUser;
     }
@@ -171,6 +173,11 @@ public class UserCenterServiceImpl extends ServiceImpl<UserCenterMapper, User>
     @Override
     public boolean isAdmin(HttpServletRequest request) {
         System.out.println("UserCenterService:isAdmin");
+        // FIXME 登录态
+        System.out.println("------------------");
+        System.out.println("当前用户 session"+request.getSession());
+        System.out.println(request);
+        System.out.println("------------------");
         //1. 获取用户登录态
         User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         //2.权限判断

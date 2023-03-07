@@ -1,9 +1,7 @@
 package edu.hitwh.werunassignment.controller;
 
 import edu.hitwh.werunassignment.common.BaseResponse;
-import edu.hitwh.werunassignment.common.ErrorCode;
 import edu.hitwh.werunassignment.common.ResultUtils;
-import edu.hitwh.werunassignment.exception.BusinessException;
 import edu.hitwh.werunassignment.model.domain.Song;
 import edu.hitwh.werunassignment.model.request.OneSongRequest;
 import edu.hitwh.werunassignment.model.request.SongsRequest;
@@ -37,7 +35,8 @@ public class SongController {
     public BaseResponse<Song> findOneSongForVotes(@RequestBody OneSongRequest oneSongRequest, HttpServletRequest request) {
         System.out.println("SongController:findOneSongForVotes");
         System.out.println(oneSongRequest);
-        if (!userCenterService.isAdmin(request)) return null;
+        //TODO 鉴权问题暂时放一放
+        //if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
         return ResultUtils.success(songService.findOneSongForVote(oneSongRequest.getSongName()));
     }
 
@@ -45,24 +44,25 @@ public class SongController {
     public BaseResponse<Song> findOneSongForVotesByGet(@RequestParam String songName, HttpServletRequest request) {
         System.out.println("SongController:findOneSongForVotesByGet");
         System.out.println(songName);
-        if (!userCenterService.isAdmin(request)) return null;
-        //System.out.println(songName);
+        //TODO 鉴权问题暂时放一放
+        //if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
         return ResultUtils.success(songService.findOneSongForVote(songName));
-
     }
 
     @PostMapping("/examineSongs")
     public BaseResponse<List<Song>> examineSongs(@RequestBody SongsRequest songsRequest, HttpServletRequest request) {
         System.out.println("SongController:examineSongs");
         System.out.println(songsRequest);
-        if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
+        //TODO 鉴权问题暂时放一放
+        //if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
         return ResultUtils.success(songService.examineSongs(songsRequest.getSongs()));
     }
 
     @GetMapping("/getUnexaminedSongs")
     public BaseResponse<List<Song>> getUnexaminedSongs(HttpServletRequest request) {
         System.out.println("SongController:getUnexaminedSongs");
-        if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
+        //TODO 鉴权问题暂时放一放
+        //if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
         return ResultUtils.success(songService.getUnexaminedSongs());
     }
 
@@ -70,8 +70,9 @@ public class SongController {
     public BaseResponse<List<Song>> deleteSongs(@RequestBody SongsRequest songsRequest, HttpServletRequest request) {
         System.out.println("SongController:deleteSongs");
         System.out.println(songsRequest);
-        if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
-        //return songService.deleteSongs(songService.getUnDeleteSongs()); //测试用
+        //TODO 鉴权问题暂时放一放
+        //if (!userCenterService.isAdmin(request)) throw new BusinessException(ErrorCode.NO_AUTH);
         return ResultUtils.success(songService.deleteSongs(songsRequest.getSongs()));
+        //return songService.deleteSongs(songService.getUnDeleteSongs()); //测试用
     }
 }

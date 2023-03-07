@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 歌曲
@@ -14,6 +16,8 @@ import lombok.Data;
  */
 @TableName(value = "song")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Song implements Serializable {
     /**
      * id
