@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * @author lzh
+ */
 @RestController()
 @RequestMapping("/song")
 public class SongController {
@@ -21,6 +24,11 @@ public class SongController {
     @Autowired
     UserCenterService userCenterService;
 
+    /**
+     *
+     * @param oneSongRequest 单一歌曲请求
+     * @return 新增歌曲信息
+     */
     @PostMapping("/addOneSong")
     public BaseResponse<Song> addOneSong(@RequestBody OneSongRequest oneSongRequest) {
         System.out.println("SongController:addOneSong");
@@ -31,6 +39,12 @@ public class SongController {
         return ResultUtils.success(songService.addOneSong(songName, singerName, platformName, remarks));
     }
 
+    /**
+     *
+     * @param oneSongRequest 单一歌曲请求
+     * @param request 用于鉴权的请求
+     * @return 查询的歌曲信息
+     */
     @PostMapping("/findOneSongForVotes")
     public BaseResponse<Song> findOneSongForVotes(@RequestBody OneSongRequest oneSongRequest, HttpServletRequest request) {
         System.out.println("SongController:findOneSongForVotes");
@@ -40,6 +54,12 @@ public class SongController {
         return ResultUtils.success(songService.findOneSongForVote(oneSongRequest.getSongName()));
     }
 
+    /**
+     *
+     * @param songName 歌曲名称
+     * @param request 用于鉴权的请求
+     * @return 查询的歌曲信息
+     */
     @GetMapping("/get/findOneSongForVotes")
     public BaseResponse<Song> findOneSongForVotesByGet(@RequestParam String songName, HttpServletRequest request) {
         System.out.println("SongController:findOneSongForVotesByGet");
@@ -49,6 +69,12 @@ public class SongController {
         return ResultUtils.success(songService.findOneSongForVote(songName));
     }
 
+    /**
+     *
+     * @param songsRequest 歌曲列表请求
+     * @param request 用于鉴权的请求
+     * @return 歌曲列表信息
+     */
     @PostMapping("/examineSongs")
     public BaseResponse<List<Song>> examineSongs(@RequestBody SongsRequest songsRequest, HttpServletRequest request) {
         System.out.println("SongController:examineSongs");
@@ -58,6 +84,11 @@ public class SongController {
         return ResultUtils.success(songService.examineSongs(songsRequest.getSongs()));
     }
 
+    /**
+     *
+     * @param request 用于鉴权的请求
+     * @return 未审核的歌曲
+     */
     @GetMapping("/getUnexaminedSongs")
     public BaseResponse<List<Song>> getUnexaminedSongs(HttpServletRequest request) {
         System.out.println("SongController:getUnexaminedSongs");
@@ -66,6 +97,12 @@ public class SongController {
         return ResultUtils.success(songService.getUnexaminedSongs());
     }
 
+    /**
+     *
+     * @param songsRequest 歌曲列表请求
+     * @param request 用于鉴权的请求
+     * @return 已删除的歌曲列表
+     */
     @PostMapping("/deleteSongs")
     public BaseResponse<List<Song>> deleteSongs(@RequestBody SongsRequest songsRequest, HttpServletRequest request) {
         System.out.println("SongController:deleteSongs");

@@ -16,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import static edu.hitwh.werunassignment.constant.UserConstant.USER_LOGIN_STATE;
 
+/**
+ * @author lzh
+ */
 @RestController()
 @RequestMapping("/user")
 public class UserController {
@@ -30,6 +33,11 @@ public class UserController {
         return "hello";
     }
 
+    /**
+     *
+     * @param registerRequest 包含注册信息的请求
+     * @return 注册用户信息
+     */
     @PostMapping(path = "/register")
     public BaseResponse<User> register(@RequestBody RegisterRequest registerRequest) {
         System.out.println("UserController:register");
@@ -41,6 +49,12 @@ public class UserController {
         return ResultUtils.success(userCenterService.register(userAccount, username, password, checkedPassword));
     }
 
+    /**
+     *
+     * @param loginRequest 包含登录信息的请求
+     * @param request 用于鉴权的请求
+     * @return 登录用户信息
+     */
     @PostMapping("/login")
     public BaseResponse<User> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         System.out.println("UserController:login");
@@ -50,6 +64,11 @@ public class UserController {
         return ResultUtils.success(userCenterService.login(userAccount, password, request));
     }
 
+    /**
+     *
+     * @param request 申请退出的请求
+     * @return 统一响应
+     */
     @GetMapping("/logout")
     public BaseResponse logout(HttpServletRequest request) {
         System.out.println("UserController:logout");
