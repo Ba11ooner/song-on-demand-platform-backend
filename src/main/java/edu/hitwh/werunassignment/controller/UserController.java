@@ -65,7 +65,7 @@ public class UserController {
         return (User) request.getSession().getAttribute(USER_LOGIN_STATE);
     }
 
-    //测试用，封装后为什么不好使
+    //测试用
     @GetMapping("/getUserState01")
     public BaseResponse<User> getUserState01(HttpServletRequest request) {
         System.out.println("UserController:getUserState");
